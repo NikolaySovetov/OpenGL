@@ -1,71 +1,64 @@
-#include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <iostream>
 
-int g_windowSizeX = 640;
-int g_windowSizeY = 480;
+void framebufferSizeCallback(GLFWwindow* pWindow, int widht, int height);
+void processInput(GLFWwindow* pWindow);
 
-void glfwWindowSizeCallback(GLFWwindow* pWindow, int width, int height) {
-    g_windowSizeX = width;
-    g_windowSizeY = height;
-    glViewport(0, 0, g_windowSizeX, g_windowSizeY);
-    std::cout << "g_windowSizeX = " << g_windowSizeX << "\ng_windowSizeY = " << g_windowSizeY << '\n';
-}
+int main()  {
 
-void glfwKeyCallback(GLFWwindow* pWindow, int key, int scancode, int action, int mode) {
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
-        glfwSetWindowShouldClose(pWindow, GL_TRUE);
-    }
-}
+    int windowWigth  = 800;
+    int windowHeight = 600;
 
-int main(void)
-{
-    /* Initialize the library */
-    if (!glfwInit()) {
-        std::cout << "Can't initialize glfw\n";
-        return -1;
-    }
+    glfwInit();
 
-    //set OpenGL version (will use 4.5)
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    /* Create a windowed mode window and its OpenGL context */
-    GLFWwindow* pWindow  = glfwCreateWindow(g_windowSizeX, g_windowSizeY, "Buttle City", nullptr, nullptr);
+    GLFWwindow* pWindow {glfwCreateWindow(windowWigth, windowHeight, 
+                                         "Learn OpenGL", nullptr, nullptr)};
     if (!pWindow) {
-        std::cout << "Can't create window\n";
+        std::cout << "Failed to create GLFW window" << std::endl;
+        glfwTerminate();
+        return -1;
+    }
+    glfwMakeContextCurrent(pWindow);
+
+    if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress) ) {
+        std::cout << "Failed to initialize GLAD" << std::endl;
         glfwTerminate();
         return -1;
     }
 
-    glfwSetWindowSizeCallback(pWindow, glfwWindowSizeCallback);
-    glfwSetKeyCallback(pWindow, glfwKeyCallback);
+    glViewport(0, 0, windowWigth, windowHeight);
 
-    /* Make the window's context current */
-    glfwMakeContextCurrent(pWindow);
+    glfwSetFramebufferSizeCallback(pWindow, framebufferSizeCallback);
 
-    if (!gladLoadGL()) {
-        std::cout << "Can't load glad\n";
-    }
-    std::cout << "Renderer: " << glGetString(GL_RENDERER) << '\n';
-    std::cout << "OpenGl version: " << glGetString(GL_VERSION) << '\n';
-    
-    //glClearColor(1, 5, 0, 1);
+    float color1 {0.2f};
+    float color2 {0.3f};
+    float color3 {0.3f};
+    float color4 {1.0f};
 
-    /* Loop until the user closes the window */
-    while (!glfwWindowShouldClose(pWindow)) {
-        /* Render here */
+    while(!glfwWindowShouldClose(pWindow)) {
+        processInput(pWindow);
+        glClearColor(color1, color2, color3, color4);
         glClear(GL_COLOR_BUFFER_BIT);
-
-        /* Swap front and back buffers */
         glfwSwapBuffers(pWindow);
-
-        /* Poll for and process events */
         glfwPollEvents();
     }
 
     glfwTerminate();
 
     return 0;
+}
+
+void framebufferSizeCallback(GLFWwindow* pWindow, int width, int height) {
+    glViewport(0, 0, width, height);
+}
+
+void processInput(GLFWwindow* pWindow) {
+    if(glfwGetKey(pWindow, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+        glfwSetWindowShouldClose(pWindow, true);
+    }
 }

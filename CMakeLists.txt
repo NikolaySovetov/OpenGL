@@ -16,7 +16,5 @@ target_link_libraries(${CMAKE_PROJECT_NAME} glfw)
 add_subdirectory(external/glad)
 target_link_libraries(${CMAKE_PROJECT_NAME} glad)
 
-#find_package(OpenGL REQUIRED)
-#target_link_libraries(${CMAKE_PROJECT_NAME} OPenGL::GL)
 
 
